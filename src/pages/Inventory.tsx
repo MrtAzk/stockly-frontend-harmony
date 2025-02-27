@@ -1,7 +1,7 @@
 
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { ArrowDownUp, ArrowUpDown, Filter, Plus, Search } from "lucide-react";
+import { ArrowDownUp, ArrowUpDown, ChevronDown, Filter, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
