@@ -1,11 +1,13 @@
 
-import { BarChart3, Box, Home, Settings } from "lucide-react";
+import { BarChart3, Box, Database, Home, Link2, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const menuItems = [
   { icon: Home, label: "Gösterge Paneli", href: "/" },
   { icon: Box, label: "Ürünler", href: "/products" },
+  { icon: Database, label: "Stok Yönetimi", href: "/inventory" },
   { icon: BarChart3, label: "Raporlar", href: "/reports" },
+  { icon: Link2, label: "Entegrasyonlar", href: "/integrations" },
   { icon: Settings, label: "Ayarlar", href: "/settings" },
 ];
 
@@ -38,4 +40,3 @@ export const Sidebar = () => {
     </aside>
   );
 };
-
