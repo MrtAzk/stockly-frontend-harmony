@@ -891,7 +891,7 @@ const ProductDetail = () => {
                     <div className="flex justify-between items-center pb-2 border-b border-gray-100">
                       <span className="text-gray-500">Ortalama Satış Fiyatı:</span>
                       <span className="font-medium">
-                        ₺{13249.toLocaleString("tr-TR")}
+                        ₺{(13249).toLocaleString("tr-TR")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
