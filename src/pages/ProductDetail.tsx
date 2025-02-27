@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { ArrowLeft, ChevronDown, Edit, ExternalLink, Eye, FileBarChart, History, MoreHorizontal, RefreshCw, Tag } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, LineChart } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, LineChart, Legend } from "recharts";
 
 const ProductDetail = () => {
   const { id } = useParams();
