@@ -1,6 +1,6 @@
 
-import { Navbar } from "@/components/layout/Navbar";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { 
   BarChart, 
@@ -162,357 +162,348 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <Sidebar />
-
-      <main className="lg:pl-64 pt-16">
-        <div className="container p-6">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gösterge Paneli</h1>
-              <p className="text-gray-500 mt-1">
-                Tüm satış, stok ve sipariş bilgileriniz için genel bakış.
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0 flex items-center space-x-3">
-              <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-1 flex shadow-sm">
-                <button
-                  className={`px-3 py-1.5 text-sm rounded-md ${
-                    dateRange === "week"
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-gray-600 hover:bg-gray-50"
-                  } transition-colors`}
-                  onClick={() => setDateRange("week")}
-                >
-                  Haftalık
-                </button>
-                <button
-                  className={`px-3 py-1.5 text-sm rounded-md ${
-                    dateRange === "month"
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-gray-600 hover:bg-gray-50"
-                  } transition-colors`}
-                  onClick={() => setDateRange("month")}
-                >
-                  Aylık
-                </button>
-                <button
-                  className={`px-3 py-1.5 text-sm rounded-md ${
-                    dateRange === "year"
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-gray-600 hover:bg-gray-50"
-                  } transition-colors`}
-                  onClick={() => setDateRange("year")}
-                >
-                  Yıllık
-                </button>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1"
+    <PageLayout>
+      {/* Header */}
+      <PageHeader
+        title="Gösterge Paneli"
+        description="Tüm satış, stok ve sipariş bilgileriniz için genel bakış."
+        actions={
+          <div className="flex items-center space-x-3">
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-1 flex shadow-sm">
+              <button
+                className={`px-3 py-1.5 text-sm rounded-md ${
+                  dateRange === "week"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-50"
+                } transition-colors`}
+                onClick={() => setDateRange("week")}
               >
-                <RefreshCw className="w-4 h-4" />
-                Yenile
-              </Button>
-            </div>
-          </div>
-
-          {/* Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard
-              title="Toplam Satış"
-              value="₺45.782"
-              change="12.3%"
-              trend="up"
-              description="Geçen haftaya göre"
-              icon={ShoppingCart}
-              className="hover-scale card-gradient"
-            />
-            <StatCard
-              title="Sipariş Sayısı"
-              value="128"
-              change="5.4%"
-              trend="up"
-              description="Geçen haftaya göre"
-              icon={Box}
-              className="hover-scale card-gradient"
-            />
-            <StatCard
-              title="Stok Değeri"
-              value="₺124.892"
-              change="2.1%"
-              trend="down"
-              description="Geçen haftaya göre"
-              icon={Package}
-              className="hover-scale card-gradient"
-            />
-            <StatCard
-              title="Bekleyen Siparişler"
-              value="12"
-              change="3"
-              trend="up"
-              description="Dün'e göre"
-              icon={ShoppingCart}
-              className="hover-scale card-gradient"
-            />
-          </div>
-
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Satış Performansı
-                </h2>
-                <div className="text-sm text-gray-500">
-                  {dateRange === "week"
-                    ? "Son 7 gün"
-                    : dateRange === "month"
-                    ? "Son 30 gün"
-                    : "Son 12 ay"}
-                </div>
-              </div>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
-                    <Legend />
-                    <Bar
-                      dataKey="shopify"
-                      name="Shopify"
-                      fill="#4f46e5"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="trendyol"
-                      name="Trendyol"
-                      fill="#f97316"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Stok Trendi
-                </h2>
-                <div className="text-sm text-gray-500">Haziran 2023</div>
-              </div>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={stockData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      name="Toplam Stok"
-                      stroke="#4f46e5"
-                      strokeWidth={2}
-                      dot={{ strokeWidth: 2, r: 4, stroke: "#4f46e5", fill: "white" }}
-                      activeDot={{ r: 6, stroke: "#4f46e5", strokeWidth: 2, fill: "white" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-
-          {/* Alerts and Low Stock */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm lg:col-span-2 hover-scale card-gradient">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Son Uyarılar
-                </h2>
-                <Link
-                  to="/notifications"
-                  className="text-sm text-primary hover:text-primary/90 transition-colors"
-                >
-                  Tümünü Gör
-                </Link>
-              </div>
-              <div className="space-y-4">
-                {recentAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className="flex items-start p-4 rounded-lg border border-gray-100 hover:bg-gray-50/70 transition-colors"
-                  >
-                    <div
-                      className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full ${
-                        alert.type === "low_stock" || alert.type === "out_of_stock"
-                          ? "bg-warning/10 text-warning"
-                          : alert.type === "price_change"
-                          ? "bg-success/10 text-success"
-                          : "bg-primary/10 text-primary"
-                      }`}
-                    >
-                      {alert.type === "low_stock" || alert.type === "out_of_stock" ? (
-                        <ArrowDownRight className="w-5 h-5" />
-                      ) : alert.type === "price_change" ? (
-                        <ArrowUpRight className="w-5 h-5" />
-                      ) : (
-                        <RefreshCw className="w-5 h-5" />
-                      )}
-                    </div>
-                    <div className="ml-4 flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium text-gray-900">
-                          {alert.product}
-                        </h3>
-                        <span className="text-xs text-gray-500">{alert.time}</span>
-                      </div>
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="text-sm text-gray-500">
-                          {alert.type === "low_stock"
-                            ? "Düşük Stok"
-                            : alert.type === "out_of_stock"
-                            ? "Stok Tükendi"
-                            : alert.type === "price_change"
-                            ? "Fiyat Değişikliği"
-                            : "Stok Güncellemesi"}
-                          : {alert.value}
-                        </span>
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
-                          {alert.platform}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Kritik Stok Ürünleri
-                </h2>
-                <Link
-                  to="/inventory"
-                  className="text-sm text-primary hover:text-primary/90 transition-colors"
-                >
-                  Tümünü Gör
-                </Link>
-              </div>
-              <div className="space-y-4">
-                {lowStockItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50/70 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium text-gray-900">
-                        {item.name}
-                      </h3>
-                      <span className="text-xs px-2 py-1 rounded-full bg-warning/10 text-warning">
-                        {item.stock}/{item.threshold}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-500">{item.sku}</span>
-                      <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
-                        {item.platform}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Orders */}
-          <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Son Siparişler
-              </h2>
-              <Link
-                to="/orders"
-                className="text-sm text-primary hover:text-primary/90 transition-colors"
+                Haftalık
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm rounded-md ${
+                  dateRange === "month"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-50"
+                } transition-colors`}
+                onClick={() => setDateRange("month")}
               >
-                Tümünü Gör
-              </Link>
+                Aylık
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm rounded-md ${
+                  dateRange === "year"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-50"
+                } transition-colors`}
+                onClick={() => setDateRange("year")}
+              >
+                Yıllık
+              </button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50/70">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sipariş ID
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Müşteri
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tarih
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Platform
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tutar
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Durum
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50/60 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">
-                        {order.id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {order.customer}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {order.date}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          {order.platform}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {order.total}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(
-                            order.status
-                          )}`}
-                        >
-                          {order.status === "shipped"
-                            ? "Kargoda"
-                            : order.status === "processing"
-                            ? "Hazırlanıyor"
-                            : order.status === "delivered"
-                            ? "Teslim Edildi"
-                            : "İptal Edildi"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Yenile
+            </Button>
+          </div>
+        }
+      />
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatCard
+          title="Toplam Satış"
+          value="₺45.782"
+          change="12.3%"
+          trend="up"
+          description="Geçen haftaya göre"
+          icon={ShoppingCart}
+          className="hover-scale card-gradient"
+        />
+        <StatCard
+          title="Sipariş Sayısı"
+          value="128"
+          change="5.4%"
+          trend="up"
+          description="Geçen haftaya göre"
+          icon={Box}
+          className="hover-scale card-gradient"
+        />
+        <StatCard
+          title="Stok Değeri"
+          value="₺124.892"
+          change="2.1%"
+          trend="down"
+          description="Geçen haftaya göre"
+          icon={Package}
+          className="hover-scale card-gradient"
+        />
+        <StatCard
+          title="Bekleyen Siparişler"
+          value="12"
+          change="3"
+          trend="up"
+          description="Dün'e göre"
+          icon={ShoppingCart}
+          className="hover-scale card-gradient"
+        />
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Satış Performansı
+            </h2>
+            <div className="text-sm text-gray-500">
+              {dateRange === "week"
+                ? "Son 7 gün"
+                : dateRange === "month"
+                ? "Son 30 gün"
+                : "Son 12 ay"}
             </div>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
+                <Legend />
+                <Bar
+                  dataKey="shopify"
+                  name="Shopify"
+                  fill="#4f46e5"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="trendyol"
+                  name="Trendyol"
+                  fill="#f97316"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </main>
-    </div>
+        
+        <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Stok Trendi
+            </h2>
+            <div className="text-sm text-gray-500">Haziran 2023</div>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={stockData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  name="Toplam Stok"
+                  stroke="#4f46e5"
+                  strokeWidth={2}
+                  dot={{ strokeWidth: 2, r: 4, stroke: "#4f46e5", fill: "white" }}
+                  activeDot={{ r: 6, stroke: "#4f46e5", strokeWidth: 2, fill: "white" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Alerts and Low Stock */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm lg:col-span-2 hover-scale card-gradient">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Son Uyarılar
+            </h2>
+            <Link
+              to="/notifications"
+              className="text-sm text-primary hover:text-primary/90 transition-colors"
+            >
+              Tümünü Gör
+            </Link>
+          </div>
+          <div className="space-y-4">
+            {recentAlerts.map((alert) => (
+              <div
+                key={alert.id}
+                className="flex items-start p-4 rounded-lg border border-gray-100 hover:bg-gray-50/70 transition-colors"
+              >
+                <div
+                  className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full ${
+                    alert.type === "low_stock" || alert.type === "out_of_stock"
+                      ? "bg-warning/10 text-warning"
+                      : alert.type === "price_change"
+                      ? "bg-success/10 text-success"
+                      : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {alert.type === "low_stock" || alert.type === "out_of_stock" ? (
+                    <ArrowDownRight className="w-5 h-5" />
+                  ) : alert.type === "price_change" ? (
+                    <ArrowUpRight className="w-5 h-5" />
+                  ) : (
+                    <RefreshCw className="w-5 h-5" />
+                  )}
+                </div>
+                <div className="ml-4 flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium text-gray-900">
+                      {alert.product}
+                    </h3>
+                    <span className="text-xs text-gray-500">{alert.time}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-sm text-gray-500">
+                      {alert.type === "low_stock"
+                        ? "Düşük Stok"
+                        : alert.type === "out_of_stock"
+                        ? "Stok Tükendi"
+                        : alert.type === "price_change"
+                        ? "Fiyat Değişikliği"
+                        : "Stok Güncellemesi"}
+                      : {alert.value}
+                    </span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
+                      {alert.platform}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Kritik Stok Ürünleri
+            </h2>
+            <Link
+              to="/inventory"
+              className="text-sm text-primary hover:text-primary/90 transition-colors"
+            >
+              Tümünü Gör
+            </Link>
+          </div>
+          <div className="space-y-4">
+            {lowStockItems.map((item) => (
+              <div
+                key={item.id}
+                className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50/70 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-gray-900">
+                    {item.name}
+                  </h3>
+                  <span className="text-xs px-2 py-1 rounded-full bg-warning/10 text-warning">
+                    {item.stock}/{item.threshold}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-500">{item.sku}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
+                    {item.platform}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Orders */}
+      <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Son Siparişler
+          </h2>
+          <Link
+            to="/orders"
+            className="text-sm text-primary hover:text-primary/90 transition-colors"
+          >
+            Tümünü Gör
+          </Link>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50/70">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Sipariş ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Müşteri
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tarih
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Platform
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tutar
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Durum
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {recentOrders.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50/60 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">
+                    {order.id}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {order.customer}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {order.date}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {order.platform}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {order.total}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(
+                        order.status
+                      )}`}
+                    >
+                      {order.status === "shipped"
+                        ? "Kargoda"
+                        : order.status === "processing"
+                        ? "Hazırlanıyor"
+                        : order.status === "delivered"
+                        ? "Teslim Edildi"
+                        : "İptal Edildi"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </PageLayout>
   );
 };
 
