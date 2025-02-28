@@ -1,298 +1,440 @@
 
 import { useState } from "react";
-import { Navbar } from "@/components/layout/Navbar";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Filter, Grid, List, Plus, Search, SlidersHorizontal } from "lucide-react";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Button } from "@/components/ui/button";
+import { Box, Download, Filter, Grid3X3, ListFilter, Package, Plus, RefreshCw, TableProperties, Upload } from "lucide-react";
+import { DataTable } from "@/components/ui/data-table";
+import { CardGrid } from "@/components/ui/card-grid";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { FilterBar } from "@/components/ui/filter-bar";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 const Products = () => {
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  
+  // Mock kategoriler
+  const categories = [
+    { id: "all", name: "Tüm Kategoriler" },
+    { id: "electronics", name: "Elektronik" },
+    { id: "clothing", name: "Giyim" },
+    { id: "home", name: "Ev & Yaşam" },
+    { id: "beauty", name: "Kozmetik" },
+  ];
 
-  // Dummy product data
-  const products = [
+  // Mock filtreler
+  const filters = [
     {
-      id: 1,
-      name: "Akıllı Telefon XS",
-      sku: "PHN-XS-128",
-      category: "Elektronik",
-      price: 12999,
-      stock: 45,
-      shopifyStock: 40,
-      trendyolStock: 5,
-      image: "/placeholder.svg",
-      status: "active",
+      id: "platform",
+      label: "Platform",
+      options: [
+        { id: "shopify", label: "Shopify", value: "shopify" },
+        { id: "trendyol", label: "Trendyol", value: "trendyol" },
+        { id: "common", label: "Her İkisi", value: "common" },
+      ],
     },
     {
-      id: 2,
-      name: "Bluetooth Kulaklık Pro",
-      sku: "AUD-BT-PRO",
-      category: "Elektronik",
-      price: 1299,
-      stock: 78,
-      shopifyStock: 50,
-      trendyolStock: 28,
-      image: "/placeholder.svg",
-      status: "active",
+      id: "stock",
+      label: "Stok Durumu",
+      options: [
+        { id: "instock", label: "Stokta", value: "instock" },
+        { id: "lowstock", label: "Kritik Stok", value: "lowstock" },
+        { id: "outofstock", label: "Tükendi", value: "outofstock" },
+      ],
     },
     {
-      id: 3,
-      name: "Akıllı Saat Fit",
-      sku: "WCH-FIT-01",
-      category: "Giyilebilir",
-      price: 2499,
-      stock: 12,
-      shopifyStock: 10,
-      trendyolStock: 2,
-      image: "/placeholder.svg",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Taşınabilir Şarj Cihazı",
-      sku: "CHG-PWR-10K",
-      category: "Aksesuar",
-      price: 399,
-      stock: 5,
-      shopifyStock: 3,
-      trendyolStock: 2,
-      image: "/placeholder.svg",
-      status: "critical",
-    },
-    {
-      id: 5,
-      name: "Kablosuz Mouse",
-      sku: "CMP-MS-WL",
-      category: "Bilgisayar",
-      price: 349,
-      stock: 0,
-      shopifyStock: 0,
-      trendyolStock: 0,
-      image: "/placeholder.svg",
-      status: "out-of-stock",
+      id: "status",
+      label: "Durum",
+      options: [
+        { id: "active", label: "Aktif", value: "active" },
+        { id: "inactive", label: "Pasif", value: "inactive" },
+      ],
     },
   ];
 
-  // Filter products based on search query
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-success/10 text-success";
-      case "critical":
-        return "bg-warning/10 text-warning";
-      case "out-of-stock":
-        return "bg-error/10 text-error";
-      default:
-        return "bg-gray-100 text-gray-600";
+  // Mock ürün verileri
+  const products = [
+    {
+      id: "1",
+      name: "Akıllı Telefon XS",
+      sku: "PHN-XS-128",
+      image: "/placeholder.svg",
+      category: "electronics",
+      stock: 45,
+      shopifyStock: 40,
+      trendyolStock: 5,
+      price: 12999,
+      status: "active",
+      lastUpdated: "2023-06-15T14:30:00",
+    },
+    {
+      id: "2",
+      name: "Kablosuz Kulaklık",
+      sku: "AUD-WL-001",
+      image: "/placeholder.svg",
+      category: "electronics",
+      stock: 3,
+      shopifyStock: 2,
+      trendyolStock: 1,
+      price: 1299,
+      status: "active",
+      lastUpdated: "2023-06-14T12:15:00",
+    },
+    {
+      id: "3",
+      name: "Tablet Bilgisayar",
+      sku: "TAB-X-64",
+      image: "/placeholder.svg",
+      category: "electronics",
+      stock: 0,
+      shopifyStock: 0,
+      trendyolStock: 0,
+      price: 5999,
+      status: "inactive",
+      lastUpdated: "2023-06-12T10:45:00",
+    },
+    {
+      id: "4",
+      name: "Bluetooth Hoparlör",
+      sku: "SPK-BT-002",
+      image: "/placeholder.svg",
+      category: "electronics",
+      stock: 15,
+      shopifyStock: 10,
+      trendyolStock: 5,
+      price: 899,
+      status: "active",
+      lastUpdated: "2023-06-10T16:20:00",
+    },
+    {
+      id: "5",
+      name: "Pamuklu T-Shirt",
+      sku: "CLT-TS-M",
+      image: "/placeholder.svg",
+      category: "clothing",
+      stock: 85,
+      shopifyStock: 65,
+      trendyolStock: 20,
+      price: 199,
+      status: "active",
+      lastUpdated: "2023-06-14T09:30:00",
+    },
+    {
+      id: "6",
+      name: "Kot Pantolon",
+      sku: "CLT-JP-32",
+      image: "/placeholder.svg",
+      category: "clothing",
+      stock: 42,
+      shopifyStock: 30,
+      trendyolStock: 12,
+      price: 399,
+      status: "active",
+      lastUpdated: "2023-06-13T11:15:00",
     }
-  };
+  ];
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "active":
-        return "Yeterli Stok";
-      case "critical":
-        return "Kritik Stok";
-      case "out-of-stock":
-        return "Tükendi";
-      default:
-        return status;
-    }
+  // Kategoriye göre filtreleme
+  const filteredProducts = selectedCategory === "all" 
+    ? products 
+    : products.filter(product => product.category === selectedCategory);
+
+  // Tablo sütunları
+  const productColumns = [
+    {
+      header: "Ürün",
+      accessorKey: "name",
+      cell: (item: any) => (
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">{item.name}</div>
+            <div className="text-xs text-gray-500">{item.sku}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Stok",
+      accessorKey: "stock",
+      cell: (item: any) => {
+        let status: any = "success";
+        if (item.stock <= 0) status = "out-of-stock";
+        else if (item.stock <= 5) status = "low-stock";
+        
+        return (
+          <div className="flex flex-col gap-1">
+            <StatusBadge status={status} text={`${item.stock} adet`} />
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <span>S: {item.shopifyStock}</span>
+              <span className="text-gray-300">|</span>
+              <span>T: {item.trendyolStock}</span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      header: "Kategori",
+      accessorKey: "category",
+      cell: (item: any) => {
+        const categoryName = 
+          item.category === "electronics" ? "Elektronik" :
+          item.category === "clothing" ? "Giyim" :
+          item.category === "home" ? "Ev & Yaşam" :
+          item.category === "beauty" ? "Kozmetik" : item.category;
+        
+        return <Badge variant="secondary">{categoryName}</Badge>;
+      },
+    },
+    {
+      header: "Fiyat",
+      accessorKey: "price",
+      cell: (item: any) => <span className="font-medium">₺{item.price.toLocaleString('tr-TR')}</span>,
+    },
+    {
+      header: "Durum",
+      accessorKey: "status",
+      cell: (item: any) => (
+        <StatusBadge 
+          status={item.status === "active" ? "active" : "inactive" as any}
+          text={item.status === "active" ? "Aktif" : "Pasif"}
+        />
+      ),
+    },
+    {
+      header: "Son Güncelleme",
+      accessorKey: "lastUpdated",
+      cell: (item: any) => (
+        <span className="text-gray-500 text-sm">
+          {new Date(item.lastUpdated).toLocaleDateString('tr-TR')}
+        </span>
+      ),
+    },
+    {
+      header: "İşlemler",
+      accessorKey: "actions",
+      cell: (item: any) => (
+        <div className="flex items-center gap-2">
+          <Link to={`/products/${item.id}`}>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </Button>
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Düzenle</DropdownMenuItem>
+              <DropdownMenuItem>Stok Güncelle</DropdownMenuItem>
+              <DropdownMenuItem>Senkronize Et</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className={item.status === "active" ? "text-orange-500" : "text-green-500"}>
+                {item.status === "active" ? "Pasife Al" : "Aktife Al"}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-500">Sil</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+    },
+  ];
+
+  // Filtre değişiklik işleyicisi
+  const handleFilterChange = (groupId: string, values: string[]) => {
+    console.log(`Filter ${groupId} changed:`, values);
+    // Burada gerçek filtreleme mantığı olacak
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <Sidebar />
-
-      <main className="lg:pl-64 pt-16">
-        <div className="container p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-h2 font-semibold text-gray-900">Ürünler</h1>
-            <button className="flex items-center gap-2 px-4 py-2 bg-primary rounded-lg text-white hover:bg-primary/90 transition-colors">
+    <PageLayout>
+      <PageHeader
+        title="Ürünler"
+        description="Tüm ürünlerinizi görüntüleyin ve yönetin"
+        icon={Package}
+        actions={
+          <>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Upload className="w-4 h-4" />
+              İçe Aktar
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Download className="w-4 h-4" />
+              Dışa Aktar
+            </Button>
+            <Button className="gap-2">
               <Plus className="w-4 h-4" />
-              <span>Yeni Ürün</span>
-            </button>
+              Yeni Ürün
+            </Button>
+          </>
+        }
+      />
+
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-col md:flex-row gap-4 justify-between">
+          <Tabs
+            defaultValue="all"
+            value={selectedCategory}
+            onValueChange={setSelectedCategory}
+            className="w-full md:w-auto"
+          >
+            <TabsList className="w-full md:w-auto grid grid-cols-2 md:flex md:flex-wrap h-auto p-1 bg-gray-100/80">
+              {categories.map((category) => (
+                <TabsTrigger
+                  key={category.id}
+                  value={category.id}
+                  className="text-sm py-1.5 px-3 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
+                  {category.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "table" ? "default" : "outline"}
+              size="sm"
+              className="w-10 h-10 p-0"
+              onClick={() => setViewMode("table")}
+            >
+              <TableProperties className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="sm"
+              className="w-10 h-10 p-0"
+              onClick={() => setViewMode("grid")}
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 w-10 p-0"
+              onClick={() => console.log("Yenile")}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Ürün adı, SKU veya barkod ile ara..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+        <FilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          className="py-2"
+        />
+      </div>
 
-            <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50">
-                <Filter className="w-4 h-4" />
-                <span className="hidden md:inline">Filtrele</span>
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50">
-                <SlidersHorizontal className="w-4 h-4" />
-                <span className="hidden md:inline">Sırala</span>
-              </button>
-              <div className="flex border border-gray-200 rounded-lg">
-                <button
-                  className={`p-2 ${
-                    viewMode === "list" ? "bg-gray-100" : "bg-white"
-                  }`}
-                  onClick={() => setViewMode("list")}
-                >
-                  <List className="w-5 h-5 text-gray-600" />
-                </button>
-                <button
-                  className={`p-2 ${
-                    viewMode === "grid" ? "bg-gray-100" : "bg-white"
-                  }`}
-                  onClick={() => setViewMode("grid")}
-                >
-                  <Grid className="w-5 h-5 text-gray-600" />
-                </button>
+      {viewMode === "table" ? (
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <DataTable
+            data={filteredProducts}
+            columns={productColumns}
+            searchable
+            searchField="name"
+            pagination
+            pageSize={10}
+            onRowClick={(item) => console.log(`Row clicked: ${item.id}`)}
+          />
+        </div>
+      ) : (
+        <CardGrid
+          data={filteredProducts}
+          renderCard={(product) => (
+            <Card className="hover:shadow-md transition-shadow overflow-hidden">
+              <div className="aspect-square w-full overflow-hidden bg-gray-50">
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </div>
-          </div>
-
-          {viewMode === "list" ? (
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ürün
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        SKU
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Kategori
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Fiyat
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Shopify Stok
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Trendyol Stok
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Toplam Stok
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Durum
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredProducts.map((product) => (
-                      <tr
-                        key={product.id}
-                        className="hover:bg-gray-50 cursor-pointer"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <img
-                                className="h-10 w-10 rounded-md object-cover"
-                                src={product.image}
-                                alt={product.name}
-                              />
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {product.name}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.sku}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.category}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ₺{product.price.toLocaleString("tr-TR")}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.shopifyStock}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.trendyolStock}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                          {product.stock}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 py-1 inline-flex text-xs leading-5 font-medium rounded-full ${getStatusClass(
-                              product.status
-                            )}`}
-                          >
-                            {getStatusText(product.status)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                >
-                  <div className="aspect-video w-full overflow-hidden bg-gray-100">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-gray-900 font-medium truncate">
-                        {product.name}
-                      </h3>
-                      <span
-                        className={`px-2 py-1 text-xs leading-5 font-medium rounded-full ${getStatusClass(
-                          product.status
-                        )}`}
-                      >
-                        {getStatusText(product.status)}
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-sm mb-2">SKU: {product.sku}</p>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-900 font-semibold">
-                        ₺{product.price.toLocaleString("tr-TR")}
-                      </p>
-                      <p className="text-gray-700 text-sm">
-                        Stok: <span className="font-medium">{product.stock}</span>
-                      </p>
-                    </div>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start gap-2 mb-2">
+                  <h3 className="font-medium text-gray-900 line-clamp-2">{product.name}</h3>
+                  <StatusBadge 
+                    status={product.status === "active" ? "active" : "inactive" as any}
+                    size="sm"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mb-3">{product.sku}</p>
+                
+                <div className="flex justify-between items-baseline mb-3">
+                  <div className="text-sm font-semibold">₺{product.price.toLocaleString('tr-TR')}</div>
+                  
+                  <div className="text-xs">
+                    {product.stock <= 0 ? (
+                      <span className="text-red-500 font-medium">Tükendi</span>
+                    ) : product.stock <= 5 ? (
+                      <span className="text-amber-500 font-medium">Son {product.stock} adet</span>
+                    ) : (
+                      <span className="text-emerald-500 font-medium">{product.stock} adet</span>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
+                
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="h-5 px-1.5 text-xs">S</Badge>
+                    <span className="ml-1">{product.shopifyStock} adet</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="h-5 px-1.5 text-xs">T</Badge>
+                    <span className="ml-1">{product.trendyolStock} adet</span>
+                  </div>
+                </div>
+              </CardContent>
+              <Separator />
+              <CardFooter className="p-2 flex justify-between">
+                <Link to={`/products/${product.id}`} className="w-full">
+                  <Button variant="ghost" size="sm" className="w-full">
+                    Detaylar
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
           )}
-        </div>
-      </main>
-    </div>
+          searchable
+          searchField="name"
+          pagination
+          pageSize={12}
+          className="pb-8"
+        />
+      )}
+    </PageLayout>
   );
 };
 
