@@ -23,13 +23,13 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="h-16 bg-white border-b border-gray-200 flex items-center fixed top-0 left-0 right-0 z-50">
+    <nav className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center fixed top-0 left-0 right-0 z-50 shadow-sm">
       <div className="flex items-center justify-between w-full px-4">
         <div className="flex items-center gap-4">
           <button className="lg:hidden">
             <Menu className="w-6 h-6 text-gray-600" />
           </button>
-          <h1 className="text-xl font-semibold">Stok Yönetimi</h1>
+          <h1 className="text-xl font-semibold bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">Stok Yönetimi</h1>
         </div>
 
         <div className="hidden md:flex items-center gap-4 flex-1 max-w-2xl mx-4">
@@ -38,19 +38,19 @@ export const Navbar = () => {
             <input
               type="text"
               placeholder="Ürün, SKU veya sipariş ara..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white/70 backdrop-blur-sm"
             />
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100">
+              <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                 <Filter className="w-4 h-4" />
                 <span>{platforms.find(p => p.id === platform)?.name}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
+            <DropdownMenuContent className="w-48 animate-in fade-in-80 slide-in-from-top-5">
               <DropdownMenuGroup>
                 {platforms.map((p) => (
                   <DropdownMenuItem 
@@ -71,12 +71,12 @@ export const Navbar = () => {
             <DropdownMenuTrigger asChild>
               <button className="relative">
                 <Bell className="w-6 h-6 text-gray-600" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-secondary text-white text-xs rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-xs rounded-full flex items-center justify-center">
                   3
                 </span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuContent align="end" className="w-80 animate-in fade-in-80 slide-in-from-top-5">
               <div className="p-2 text-center text-sm font-medium border-b">
                 Bildirimler
               </div>
@@ -112,13 +112,13 @@ export const Navbar = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex items-center gap-2 cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-primary font-medium text-sm">AS</span>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                  <span className="text-white font-medium text-sm">AS</span>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-600" />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="animate-in fade-in-80 slide-in-from-top-5">
               <DropdownMenuGroup>
                 <DropdownMenuItem className="text-sm">Profilim</DropdownMenuItem>
                 <DropdownMenuItem className="text-sm">Hesap Ayarları</DropdownMenuItem>

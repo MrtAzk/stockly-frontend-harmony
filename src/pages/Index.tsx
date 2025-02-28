@@ -169,41 +169,41 @@ const Index = () => {
       <main className="lg:pl-64 pt-16">
         <div className="container p-6">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Gösterge Paneli</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Gösterge Paneli</h1>
               <p className="text-gray-500 mt-1">
                 Tüm satış, stok ve sipariş bilgileriniz için genel bakış.
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex items-center space-x-3">
-              <div className="bg-white border border-gray-200 rounded-lg p-1 flex">
+              <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-1 flex shadow-sm">
                 <button
-                  className={`px-3 py-1 text-sm rounded ${
+                  className={`px-3 py-1.5 text-sm rounded-md ${
                     dateRange === "week"
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-white shadow-sm"
                       : "text-gray-600 hover:bg-gray-50"
-                  }`}
+                  } transition-colors`}
                   onClick={() => setDateRange("week")}
                 >
                   Haftalık
                 </button>
                 <button
-                  className={`px-3 py-1 text-sm rounded ${
+                  className={`px-3 py-1.5 text-sm rounded-md ${
                     dateRange === "month"
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-white shadow-sm"
                       : "text-gray-600 hover:bg-gray-50"
-                  }`}
+                  } transition-colors`}
                   onClick={() => setDateRange("month")}
                 >
                   Aylık
                 </button>
                 <button
-                  className={`px-3 py-1 text-sm rounded ${
+                  className={`px-3 py-1.5 text-sm rounded-md ${
                     dateRange === "year"
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-white shadow-sm"
                       : "text-gray-600 hover:bg-gray-50"
-                  }`}
+                  } transition-colors`}
                   onClick={() => setDateRange("year")}
                 >
                   Yıllık
@@ -221,44 +221,48 @@ const Index = () => {
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard
               title="Toplam Satış"
               value="₺45.782"
-              change="+12.3%"
+              change="12.3%"
               trend="up"
               description="Geçen haftaya göre"
               icon={ShoppingCart}
+              className="hover-scale card-gradient"
             />
             <StatCard
               title="Sipariş Sayısı"
               value="128"
-              change="+5.4%"
+              change="5.4%"
               trend="up"
               description="Geçen haftaya göre"
               icon={Box}
+              className="hover-scale card-gradient"
             />
             <StatCard
               title="Stok Değeri"
               value="₺124.892"
-              change="-2.1%"
+              change="2.1%"
               trend="down"
               description="Geçen haftaya göre"
               icon={Package}
+              className="hover-scale card-gradient"
             />
             <StatCard
               title="Bekleyen Siparişler"
               value="12"
-              change="+3"
+              change="3"
               trend="up"
               description="Dün'e göre"
               icon={ShoppingCart}
+              className="hover-scale card-gradient"
             />
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Satış Performansı
@@ -274,21 +278,21 @@ const Index = () => {
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
                     <Legend />
                     <Bar
                       dataKey="shopify"
                       name="Shopify"
-                      fill="#3366FF"
+                      fill="#4f46e5"
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar
                       dataKey="trendyol"
                       name="Trendyol"
-                      fill="#FF6633"
+                      fill="#f97316"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -296,7 +300,7 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Stok Trendi
@@ -306,16 +310,18 @@ const Index = () => {
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={stockData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
                     <Line
                       type="monotone"
                       dataKey="value"
                       name="Toplam Stok"
-                      stroke="#3366FF"
+                      stroke="#4f46e5"
                       strokeWidth={2}
+                      dot={{ strokeWidth: 2, r: 4, stroke: "#4f46e5", fill: "white" }}
+                      activeDot={{ r: 6, stroke: "#4f46e5", strokeWidth: 2, fill: "white" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -324,15 +330,15 @@ const Index = () => {
           </div>
 
           {/* Alerts and Low Stock */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white p-6 rounded-xl shadow-sm lg:col-span-2 hover-scale card-gradient">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Son Uyarılar
                 </h2>
                 <Link
                   to="/notifications"
-                  className="text-sm text-primary hover:text-primary/90"
+                  className="text-sm text-primary hover:text-primary/90 transition-colors"
                 >
                   Tümünü Gör
                 </Link>
@@ -341,7 +347,7 @@ const Index = () => {
                 {recentAlerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className="flex items-start p-3 rounded-lg border border-gray-100 hover:bg-gray-50"
+                    className="flex items-start p-4 rounded-lg border border-gray-100 hover:bg-gray-50/70 transition-colors"
                   >
                     <div
                       className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full ${
@@ -388,14 +394,14 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Kritik Stok Ürünleri
                 </h2>
                 <Link
                   to="/inventory"
-                  className="text-sm text-primary hover:text-primary/90"
+                  className="text-sm text-primary hover:text-primary/90 transition-colors"
                 >
                   Tümünü Gör
                 </Link>
@@ -404,7 +410,7 @@ const Index = () => {
                 {lowStockItems.map((item) => (
                   <div
                     key={item.id}
-                    className="p-3 rounded-lg border border-gray-100 hover:bg-gray-50"
+                    className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50/70 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-medium text-gray-900">
@@ -427,21 +433,21 @@ const Index = () => {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="bg-white p-6 rounded-xl shadow-sm hover-scale card-gradient">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-semibold text-gray-900">
                 Son Siparişler
               </h2>
               <Link
                 to="/orders"
-                className="text-sm text-primary hover:text-primary/90"
+                className="text-sm text-primary hover:text-primary/90 transition-colors"
               >
                 Tümünü Gör
               </Link>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50/70">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Sipariş ID
@@ -465,11 +471,11 @@ const Index = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {recentOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr key={order.id} className="hover:bg-gray-50/60 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">
                         {order.id}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {order.customer}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -480,7 +486,7 @@ const Index = () => {
                           {order.platform}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {order.total}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
