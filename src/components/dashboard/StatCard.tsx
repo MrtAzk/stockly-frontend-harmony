@@ -4,9 +4,12 @@ import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   icon: LucideIcon;
-  label: string;
+  label?: string;
+  title?: string;
   value: string;
   change?: string;
+  trend?: "up" | "down";
+  description?: string;
   isPositive?: boolean;
   className?: string;
 }
@@ -14,11 +17,19 @@ interface StatCardProps {
 export const StatCard = ({
   icon: Icon,
   label,
+  title,
   value,
   change,
+  trend,
+  description,
   isPositive,
   className,
 }: StatCardProps) => {
+  // Eğer trend belirtilmişse bunu isPositive olarak kullan
+  const isPositiveValue = trend ? trend === "up" : isPositive;
+  // title veya label kullan - geriye uyumluluk için
+  const displayLabel = title || label;
+
   return (
     <div
       className={cn(
@@ -28,29 +39,30 @@ export const StatCard = ({
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-500">{label}</p>
+          <p className="text-sm font-medium text-gray-500">{displayLabel}</p>
           <h3 className="mt-2 text-2xl font-semibold text-gray-900">{value}</h3>
           {change && (
             <p
               className={cn(
                 "mt-2 text-sm font-medium",
-                isPositive ? "text-success" : "text-error"
+                isPositiveValue ? "text-success" : "text-error"
               )}
             >
-              {isPositive ? "+" : "-"} {change}
+              {isPositiveValue ? "+" : "-"} {change}
+              {description && <span className="text-gray-500 ml-1 text-xs">{description}</span>}
             </p>
           )}
         </div>
         <div
           className={cn(
             "rounded-full p-3",
-            isPositive ? "bg-success/10" : "bg-primary/10"
+            isPositiveValue ? "bg-success/10" : "bg-primary/10"
           )}
         >
           <Icon
             className={cn(
               "h-6 w-6",
-              isPositive ? "text-success" : "text-primary"
+              isPositiveValue ? "text-success" : "text-primary"
             )}
           />
         </div>
@@ -59,4 +71,3 @@ export const StatCard = ({
     </div>
   );
 };
-
