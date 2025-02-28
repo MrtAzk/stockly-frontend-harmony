@@ -1,344 +1,562 @@
 
-import { Navbar } from "@/components/layout/Navbar";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { AlertCircle, CheckCircle, Link, Plus, RefreshCw, Settings as SettingsIcon, ShoppingBag, TrendingUp } from "lucide-react";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { DataTable } from "@/components/ui/data-table";
+import { Link2, Plus, RefreshCw, Settings } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-
-// Entegrasyon durumları
-const platforms = [
-  {
-    id: "shopify",
-    name: "Shopify",
-    icon: ShoppingBag,
-    status: "connected",
-    lastSync: "2023-06-10T14:30:00",
-    products: 156,
-    orders: 45,
-    color: "#7AB55C",
-  },
-  {
-    id: "trendyol",
-    name: "Trendyol",
-    icon: TrendingUp,
-    status: "connected",
-    lastSync: "2023-06-10T12:15:00",
-    products: 124,
-    orders: 32,
-    color: "#FF6633",
-  },
-  {
-    id: "n11",
-    name: "N11",
-    icon: ShoppingBag,
-    status: "disconnected",
-    lastSync: null,
-    products: 0,
-    orders: 0,
-    color: "#7C00FF",
-  },
-  {
-    id: "hepsiburada",
-    name: "Hepsiburada",
-    icon: ShoppingBag,
-    status: "error",
-    lastSync: "2023-06-05T09:15:00",
-    products: 98,
-    orders: 0,
-    color: "#FF6600",
-  },
-];
 
 const Integrations = () => {
-  const [isConnectDialogOpen, setIsConnectDialogOpen] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState<any>(null);
-  const { toast } = useToast();
+  const [apiKey, setApiKey] = useState("");
+  const [apiSecret, setApiSecret] = useState("");
+  const [shopDomain, setShopDomain] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState("shopify");
 
-  // Durum renkleri
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "connected":
-        return "bg-success/10 text-success";
-      case "disconnected":
-        return "bg-gray-100 text-gray-600";
-      case "error":
-        return "bg-error/10 text-error";
-      default:
-        return "bg-gray-100 text-gray-600";
+  // Mock entegrasyon verileri
+  const platforms = [
+    {
+      id: "shopify",
+      name: "Shopify",
+      status: "active",
+      connectedAt: "2023-06-01T10:00:00",
+      lastSync: "2023-06-15T14:30:00",
+      productCount: 245,
+      domain: "your-store.myshopify.com",
+      icon: "/placeholder.svg",
+    },
+    {
+      id: "trendyol",
+      name: "Trendyol",
+      status: "active",
+      connectedAt: "2023-06-02T11:30:00",
+      lastSync: "2023-06-15T14:30:00",
+      productCount: 180,
+      sellerId: "12345",
+      icon: "/placeholder.svg",
     }
-  };
+  ];
 
-  // Platformu bağlama
-  const handleConnect = (platform: any) => {
-    setSelectedPlatform(platform);
-    setIsConnectDialogOpen(true);
-  };
+  // Senkronizasyon geçmişi
+  const syncHistory = [
+    {
+      id: "1",
+      date: "2023-06-15T14:30:00",
+      platform: "Shopify",
+      operation: "stock_update",
+      affectedItems: 45,
+      status: "success",
+      message: "Başarıyla tamamlandı",
+    },
+    {
+      id: "2",
+      date: "2023-06-15T12:15:00",
+      platform: "Trendyol",
+      operation: "price_update",
+      affectedItems: 23,
+      status: "success",
+      message: "Başarıyla tamamlandı",
+    },
+    {
+      id: "3",
+      date: "2023-06-14T16:45:00",
+      platform: "Shopify",
+      operation: "product_fetch",
+      affectedItems: 245,
+      status: "error",
+      message: "API bağlantı hatası",
+    },
+    {
+      id: "4",
+      date: "2023-06-14T10:30:00",
+      platform: "Trendyol",
+      operation: "stock_update",
+      affectedItems: 180,
+      status: "success",
+      message: "Başarıyla tamamlandı",
+    },
+    {
+      id: "5",
+      date: "2023-06-13T14:30:00",
+      platform: "Shopify",
+      operation: "stock_update",
+      affectedItems: 45,
+      status: "warning",
+      message: "Kısmi başarı, 5 ürün güncellenemedi",
+    },
+  ];
 
-  // Bağlantı formu gönderimi
-  const handleConnectSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Platform Bağlandı",
-      description: `${selectedPlatform?.name} platformu başarıyla bağlandı.`,
-    });
-    setIsConnectDialogOpen(false);
-  };
-
-  // Senkronizasyon başlatma
-  const handleSync = (platformId: string) => {
-    const platform = platforms.find(p => p.id === platformId);
-    if (platform) {
-      toast({
-        title: "Senkronizasyon Başlatıldı",
-        description: `${platform.name} platformu için senkronizasyon başlatıldı.`,
-      });
+  // Senkronizasyon geçmişi için tablo sütunları
+  const syncHistoryColumns = [
+    {
+      header: "Tarih",
+      accessorKey: "date",
+      cell: (item: any) => new Date(item.date).toLocaleString('tr-TR')
+    },
+    {
+      header: "Platform",
+      accessorKey: "platform"
+    },
+    {
+      header: "İşlem",
+      accessorKey: "operation",
+      cell: (item: any) => {
+        const operationText = 
+          item.operation === "stock_update" ? "Stok Güncelleme" :
+          item.operation === "price_update" ? "Fiyat Güncelleme" :
+          item.operation === "product_fetch" ? "Ürün Çekme" :
+          item.operation;
+        
+        return <span>{operationText}</span>;
+      }
+    },
+    {
+      header: "Etkilenen Ürün",
+      accessorKey: "affectedItems",
+      cell: (item: any) => `${item.affectedItems} ürün`
+    },
+    {
+      header: "Durum",
+      accessorKey: "status",
+      cell: (item: any) => (
+        <StatusBadge status={item.status as any} />
+      )
+    },
+    {
+      header: "Mesaj",
+      accessorKey: "message"
+    },
+    {
+      header: "İşlemler",
+      accessorKey: "actions",
+      cell: (item: any) => (
+        <Button 
+          size="sm" 
+          variant="ghost"
+          className="h-8 w-8 p-0"
+          disabled={item.status !== "error"}
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+      )
     }
-  };
+  ];
 
-  // Tarihi formatlama
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Hiç";
-    const date = new Date(dateString);
-    return date.toLocaleString("tr-TR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // Webhook tanımları
+  const webhooks = [
+    {
+      id: "1",
+      platform: "Shopify",
+      event: "order_created",
+      url: "https://api.example.com/webhooks/shopify/order-created",
+      status: "active"
+    },
+    {
+      id: "2",
+      platform: "Shopify",
+      event: "product_updated",
+      url: "https://api.example.com/webhooks/shopify/product-updated",
+      status: "active"
+    },
+    {
+      id: "3",
+      platform: "Trendyol",
+      event: "order_created",
+      url: "https://api.example.com/webhooks/trendyol/order-created",
+      status: "inactive"
+    }
+  ];
+
+  // Webhook tanımları için tablo sütunları
+  const webhookColumns = [
+    {
+      header: "Platform",
+      accessorKey: "platform"
+    },
+    {
+      header: "Olay",
+      accessorKey: "event",
+      cell: (item: any) => {
+        const eventText = 
+          item.event === "order_created" ? "Sipariş Oluşturuldu" :
+          item.event === "product_updated" ? "Ürün Güncellendi" :
+          item.event;
+        
+        return <span>{eventText}</span>;
+      }
+    },
+    {
+      header: "Webhook URL",
+      accessorKey: "url",
+      cell: (item: any) => (
+        <span className="text-xs text-gray-600 truncate max-w-xs inline-block">{item.url}</span>
+      )
+    },
+    {
+      header: "Durum",
+      accessorKey: "status",
+      cell: (item: any) => (
+        <StatusBadge status={item.status === "active" ? "active" : "inactive" as any} />
+      )
+    },
+    {
+      header: "İşlemler",
+      accessorKey: "actions",
+      cell: (item: any) => (
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
+      )
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <Sidebar />
-
-      <main className="lg:pl-64 pt-16">
-        <div className="container p-6">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Entegrasyonlar</h1>
-              <p className="text-gray-500 mt-1">
-                E-ticaret platformlarıyla entegrasyonları yönetin.
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0">
-              <Button className="gap-2">
-                <Plus className="w-4 h-4" />
+    <PageLayout>
+      <PageHeader 
+        title="Entegrasyonlar"
+        description="E-ticaret platformları ile entegrasyon yönetimi"
+        icon={Link2}
+        actions={
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
                 Yeni Entegrasyon
               </Button>
-            </div>
-          </div>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Yeni Platform Entegrasyonu</DialogTitle>
+                <DialogDescription>
+                  E-ticaret platformunu bağlamak için API bilgilerini girin.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="platform">Platform</Label>
+                  <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Platform Seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="shopify">Shopify</SelectItem>
+                      <SelectItem value="trendyol">Trendyol</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-          {/* Integrations Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {platforms.map((platform) => (
-              <div key={platform.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-                      style={{ backgroundColor: `${platform.color}15` }}
-                    >
-                      <platform.icon
-                        className="w-5 h-5"
-                        style={{ color: platform.color }}
+                {selectedPlatform === "shopify" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label htmlFor="domain">Mağaza Adresi</Label>
+                      <Input
+                        id="domain"
+                        placeholder="your-store.myshopify.com"
+                        value={shopDomain}
+                        onChange={(e) => setShopDomain(e.target.value)}
                       />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {platform.name}
-                      </h3>
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${getStatusClass(
-                          platform.status
-                        )}`}
-                      >
-                        {platform.status === "connected"
-                          ? "Bağlı"
-                          : platform.status === "disconnected"
-                          ? "Bağlı Değil"
-                          : "Hata"}
-                      </span>
+                    <div className="grid gap-2">
+                      <Label htmlFor="apiKey">API Anahtarı</Label>
+                      <Input
+                        id="apiKey"
+                        type="password"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                      />
                     </div>
-                  </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="apiSecret">API Gizli Anahtarı</Label>
+                      <Input
+                        id="apiSecret"
+                        type="password"
+                        value={apiSecret}
+                        onChange={(e) => setApiSecret(e.target.value)}
+                      />
+                    </div>
+                  </>
+                )}
 
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500">Son Senkronizasyon:</span>
-                      <span className="font-medium">{formatDate(platform.lastSync)}</span>
+                {selectedPlatform === "trendyol" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label htmlFor="apiKey">Satıcı ID</Label>
+                      <Input
+                        id="apiKey"
+                        placeholder="123456"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                      />
                     </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500">Ürünler:</span>
-                      <span className="font-medium">{platform.products}</span>
+                    <div className="grid gap-2">
+                      <Label htmlFor="apiSecret">API Anahtarı</Label>
+                      <Input
+                        id="apiSecret"
+                        type="password"
+                        value={apiSecret}
+                        onChange={(e) => setApiSecret(e.target.value)}
+                      />
                     </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500">Siparişler:</span>
-                      <span className="font-medium">{platform.orders}</span>
-                    </div>
-                  </div>
+                  </>
+                )}
+              </div>
+              
+              <DialogFooter>
+                <Button type="submit">Entegrasyonu Tamamla</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        }
+      />
 
-                  <div className="flex space-x-2">
-                    {platform.status === "connected" ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-1"
-                          onClick={() => handleSync(platform.id)}
-                        >
-                          <RefreshCw className="w-4 h-4" />
-                          Senkronize Et
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1"
-                        >
-                          <SettingsIcon className="w-4 h-4" />
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        className="flex-1 gap-1"
-                        onClick={() => handleConnect(platform)}
-                      >
-                        <Link className="w-4 h-4" />
-                        {platform.status === "disconnected" ? "Bağlan" : "Yeniden Bağlan"}
-                      </Button>
-                    )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {platforms.map((platform) => (
+          <Card key={platform.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded overflow-hidden bg-gray-100 flex items-center justify-center">
+                    <img 
+                      src={platform.icon} 
+                      alt={platform.name}
+                      className="w-6 h-6 object-contain"
+                    />
                   </div>
+                  <div>
+                    <CardTitle>{platform.name}</CardTitle>
+                    <CardDescription>
+                      {platform.id === "shopify" 
+                        ? `Mağaza: ${platform.domain}` 
+                        : `Satıcı ID: ${platform.sellerId}`
+                      }
+                    </CardDescription>
+                  </div>
+                </div>
+                <StatusBadge 
+                  status={platform.status === "active" ? "active" : "inactive" as any} 
+                  text={platform.status === "active" ? "Bağlı" : "Bağlantı Kesildi"}
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-y-2 text-sm">
+                <div className="text-gray-500">Ürün Sayısı:</div>
+                <div className="font-medium">{platform.productCount}</div>
+                
+                <div className="text-gray-500">Bağlantı Tarihi:</div>
+                <div>{new Date(platform.connectedAt).toLocaleDateString('tr-TR')}</div>
+                
+                <div className="text-gray-500">Son Senkronizasyon:</div>
+                <div>{new Date(platform.lastSync).toLocaleString('tr-TR')}</div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <div className="flex items-center gap-2">
+                <Switch id={`${platform.id}-status`} defaultChecked={platform.status === "active"} />
+                <Label htmlFor={`${platform.id}-status`}>Etkin</Label>
+              </div>
+              <div className="space-x-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => console.log(`Senkronize et: ${platform.id}`)}
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Senkronize Et
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={() => console.log(`Ayarlar: ${platform.id}`)}
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Ayarlar
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      <Tabs defaultValue="general" className="mb-6">
+        <TabsList>
+          <TabsTrigger value="general">Genel Ayarlar</TabsTrigger>
+          <TabsTrigger value="webhooks">Webhook Ayarları</TabsTrigger>
+          <TabsTrigger value="syncHistory">Senkronizasyon Geçmişi</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="general" className="p-6 rounded-xl bg-white shadow-sm mt-4">
+          <h3 className="text-lg font-medium mb-4">Genel Entegrasyon Ayarları</h3>
+          
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Otomatik Senkronizasyon</h4>
+              <div className="grid gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="auto-sync">Otomatik Senkronizasyon</Label>
+                    <p className="text-sm text-gray-500">Belirli aralıklarla platformlar arası otomatik senkronizasyon</p>
+                  </div>
+                  <Switch id="auto-sync" defaultChecked />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="sync-interval">Senkronizasyon Sıklığı</Label>
+                    <p className="text-sm text-gray-500">Ne sıklıkla otomatik senkronizasyon yapılacağı</p>
+                  </div>
+                  <Select defaultValue="60">
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Sıklık Seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="15">15 dakika</SelectItem>
+                      <SelectItem value="30">30 dakika</SelectItem>
+                      <SelectItem value="60">1 saat</SelectItem>
+                      <SelectItem value="360">6 saat</SelectItem>
+                      <SelectItem value="720">12 saat</SelectItem>
+                      <SelectItem value="1440">24 saat</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Entegrasyon Bilgileri */}
-          <div className="mt-10">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Entegrasyon Yardımı</h2>
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              <div className="p-6 space-y-6">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mt-1">
-                    <CheckCircle className="h-5 w-5 text-success" />
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2">Stok Yönetimi</h4>
+              <div className="grid gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="stock-sync">Stok Senkronizasyonu</Label>
+                    <p className="text-sm text-gray-500">Platformlar arası stok senkronizasyonu</p>
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Bağlı Platformlar</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Bağlı platformlardan otomatik olarak ürün, stok ve sipariş bilgileri alınır.
-                      Stok güncellemeleri otomatik olarak senkronize edilir.
-                    </p>
+                  <Switch id="stock-sync" defaultChecked />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="stock-safety">Güvenlik Payı</Label>
+                    <p className="text-sm text-gray-500">Platformlarda gösterilecek stok için güvenlik payı</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      id="stock-safety" 
+                      type="number"
+                      className="w-20" 
+                      defaultValue="2"
+                    />
+                    <span className="text-sm text-gray-500">adet</span>
                   </div>
                 </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mt-1">
-                    <AlertCircle className="h-5 w-5 text-warning" />
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="stock-threshold">Kritik Stok Eşiği</Label>
+                    <p className="text-sm text-gray-500">Stok uyarıları için minimum eşik değeri</p>
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Hata Durumları</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Eğer bir platformda hata varsa, API anahtarlarını kontrol edin ve yeniden
-                      bağlanmayı deneyin. Sorun devam ederse, platform ayarlarından
-                      API izinlerini kontrol edin.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mt-1">
-                    <Link className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Yeni Platform Bağlama</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Yeni bir platform bağlamak için, ilgili platformdan API anahtarlarına
-                      ihtiyacınız olacak. Platformun geliştirici sayfasından bu bilgileri edinebilirsiniz.
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      id="stock-threshold" 
+                      type="number"
+                      className="w-20" 
+                      defaultValue="5"
+                    />
+                    <span className="text-sm text-gray-500">adet</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Platform Bağlantı Modal */}
-      <Dialog open={isConnectDialogOpen} onOpenChange={setIsConnectDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {selectedPlatform?.name} Platformuna Bağlan
-            </DialogTitle>
-          </DialogHeader>
-          <div className="p-4">
-            {selectedPlatform && (
-              <form onSubmit={handleConnectSubmit} className="space-y-4">
-                <div className="mb-4">
-                  <p className="text-sm text-gray-500">
-                    {selectedPlatform.name} platformuna bağlanmak için aşağıdaki bilgileri girin.
-                    API anahtarlarını platformun geliştirici sayfasından edinebilirsiniz.
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    API Anahtarı
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="API anahtarınızı girin"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    API Gizli Anahtarı
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="API gizli anahtarınızı girin"
-                  />
-                </div>
-
-                {selectedPlatform.id === "shopify" && (
+            
+            <Separator />
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2">Platform Öncelikleri</h4>
+              <div className="grid gap-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mağaza URL
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="örn: magaza.myshopify.com"
-                    />
+                    <Label htmlFor="stock-priority">Stok Önceliği</Label>
+                    <p className="text-sm text-gray-500">Stok çakışması durumunda hangi platformun öncelikli olacağı</p>
                   </div>
-                )}
-
-                <div className="flex justify-end space-x-3 pt-4">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    onClick={() => setIsConnectDialogOpen(false)}
-                  >
-                    İptal
-                  </Button>
-                  <Button type="submit">Bağlan</Button>
+                  <Select defaultValue="shopify">
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Platform Seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="shopify">Shopify</SelectItem>
+                      <SelectItem value="trendyol">Trendyol</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </form>
-            )}
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="price-priority">Fiyat Önceliği</Label>
+                    <p className="text-sm text-gray-500">Fiyat çakışması durumunda hangi platformun öncelikli olacağı</p>
+                  </div>
+                  <Select defaultValue="shopify">
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Platform Seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="shopify">Shopify</SelectItem>
+                      <SelectItem value="trendyol">Trendyol</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+          
+          <div className="mt-6 flex justify-end gap-2">
+            <Button variant="outline">Varsayılanlara Sıfırla</Button>
+            <Button>Ayarları Kaydet</Button>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="webhooks" className="p-6 rounded-xl bg-white shadow-sm mt-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium">Webhook Tanımları</h3>
+            <Button size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Yeni Webhook
+            </Button>
+          </div>
+          
+          <DataTable
+            data={webhooks}
+            columns={webhookColumns}
+          />
+        </TabsContent>
+        
+        <TabsContent value="syncHistory" className="p-6 rounded-xl bg-white shadow-sm mt-4">
+          <h3 className="text-lg font-medium mb-4">Senkronizasyon Geçmişi</h3>
+          <DataTable
+            data={syncHistory}
+            columns={syncHistoryColumns}
+            pagination
+          />
+        </TabsContent>
+      </Tabs>
+    </PageLayout>
   );
 };
 
